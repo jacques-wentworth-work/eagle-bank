@@ -224,7 +224,7 @@ class UserControllerIntegrationTest {
         mockMvc.perform(get("/v1/users/{id}", "usr-johway1"))
                 .andExpect(status().isNotFound());
     }
-    
+
     @Test
     void updateUserById() {
         //TODO: update user endpoint tests
