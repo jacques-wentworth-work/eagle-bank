@@ -1,0 +1,54 @@
+### Create User One
+POST http://localhost:8080/eagle-bank/v1/users
+Content-Type: application/json
+
+{
+  "name": "User One",
+  "address": {
+    "line1": "line1",
+    "line2": "line2",
+    "town": "town1",
+    "county": "county1",
+    "postcode": "postcode1"
+  },
+  "phoneNumber": "0111111111",
+  "email": "user.one@example.com"
+}
+
+
+### Create User Two
+POST http://localhost:8080/eagle-bank/v1/users
+Content-Type: application/json
+
+{
+  "name": "User Two",
+  "address": {
+    "line1": "line21",
+    "line2": "line22",
+    "town": "town2",
+    "county": "county2",
+    "postcode": "postcode2"
+  },
+  "phoneNumber": "0222222222",
+  "email": "user.two@example.com"
+}
+
+
+### Get user
+GET http://localhost:8080/eagle-bank/v1/users/usr-useone1
+
+
+### Update user
+PATCH http://localhost:8080/eagle-bank/v1/users/usr-useone1
+Content-Type: application/json
+
+{
+  "address": {
+    "postcode": "postcode111"
+  },
+  "phoneNumber": "0123456789"
+}
+
+
+### Delete user
+DELETE http://localhost:8080/eagle-bank/v1/users/usr-useone1
