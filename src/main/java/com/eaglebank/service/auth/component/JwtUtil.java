@@ -12,6 +12,8 @@ import java.util.Date;
 
 @Component
 public class JwtUtil {
+    public static final int JWT_TTL = 60 * 60 * 1000; // Token valid for 1 hours
+
     private final SecretKey secretKey;
 
     public JwtUtil(@Value("${secrets.jwt}") String jwtSecret) {
@@ -22,7 +24,7 @@ public class JwtUtil {
         return Jwts.builder()
                 .subject(username)
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 60 * 60 * 1000)) // Token valid for 1 hours
+                .expiration(new Date(System.currentTimeMillis() + JWT_TTL))
                 .signWith(secretKey)
                 .compact();
     }
