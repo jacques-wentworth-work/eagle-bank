@@ -48,4 +48,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<GenericError> handleUserNotFound(UserNotFoundException ex) {
         return new ResponseEntity<>(new GenericError(ex.getMessage(), null), HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(UserLoginException.class)
+    public ResponseEntity<GenericError> handleLoginException(UserLoginException ex) {
+        return new ResponseEntity<>(new GenericError(ex.getMessage(), null), HttpStatus.UNAUTHORIZED);
+    }
 }

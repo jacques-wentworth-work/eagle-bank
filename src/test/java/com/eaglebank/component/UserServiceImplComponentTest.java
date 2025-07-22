@@ -1,4 +1,4 @@
-package com.eaglebank.service.user.impl;
+package com.eaglebank.component;
 
 import com.eaglebank.repository.UserRepository;
 import com.eaglebank.resource.AddressResource;
@@ -36,7 +36,8 @@ class UserServiceImplComponentTest {
                 "Test User",
                 new AddressResource("Line 1", "Line 2", "", "Town", "County", "AB12 3CD"),
                 "+441234567890",
-                "test@example.com"
+                "test@example.com",
+                "secure_password123"
         );
 
         UserResponse created = service.create(request);
@@ -57,8 +58,8 @@ class UserServiceImplComponentTest {
                 "Update Test",
                 new AddressResource("Line 1", "", "", "Town", "County", "PC123"),
                 "+441234567890",
-                "update@example.com"
-        );
+                "update@example.com",
+                "secure_password123");
 
         UserResponse created = service.create(createRequest);
         assertNotNull(created.id());
@@ -70,8 +71,7 @@ class UserServiceImplComponentTest {
                 "Updated Name",
                 new AddressResource("New Line", "Apt 2", "", "New Town", "New County", "NEW123"),
                 "+440000000000",
-                "updated@example.com"
-        );
+                "updated@example.com", "");
 
         UserResponse updated = service.update(created.id(), updateRequest);
 
@@ -81,7 +81,6 @@ class UserServiceImplComponentTest {
         assertEquals("+440000000000", updated.phoneNumber());
     }
 
-
     @Test
     void shouldCreateAndDeleteUser() {
         // Create user
@@ -89,7 +88,8 @@ class UserServiceImplComponentTest {
                 "Delete Me",
                 new AddressResource("L1", "", "", "Town", "County", "PC"),
                 "+441111111111",
-                "delete@example.com"
+                "delete@example.com",
+                "secure_password123"
         );
 
         UserResponse created = service.create(request);

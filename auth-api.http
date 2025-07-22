@@ -1,0 +1,9 @@
+### Get Token with valid creds
+POST http://localhost:8080/eagle-bank/v1/auth
+Content-Type: application/json
+Authorization: Basic dXNyLXVzZW9uZTE6cXdlcnR5IUDCoyQl
+
+### Get Token with invalid creds
+POST http://localhost:8080/eagle-bank/v1/auth
+Content-Type: application/json
+Authorization: Basic qwertyuiopoiuytre

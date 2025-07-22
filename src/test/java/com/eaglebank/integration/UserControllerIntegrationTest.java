@@ -1,7 +1,9 @@
-package com.eaglebank.controller;
+package com.eaglebank.integration;
 
 import com.eaglebank.entity.Address;
 import com.eaglebank.entity.User;
+import com.eaglebank.entity.UserAuth;
+import com.eaglebank.repository.UserAuthRepository;
 import com.eaglebank.repository.UserRepository;
 import com.eaglebank.resource.AddressResource;
 import com.eaglebank.resource.UserCreateRequest;
@@ -14,7 +16,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.Optional;
+
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -34,9 +39,13 @@ class UserControllerIntegrationTest {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private UserAuthRepository userAuthRepository;
+
     @BeforeEach
     void setUp() {
         userRepository.deleteAll();
+        userAuthRepository.deleteAll();
     }
 
     @Test
@@ -45,17 +54,24 @@ class UserControllerIntegrationTest {
                 "Alice Smith",
                 new AddressResource("Line 1", "Line 2", "", "City", "County", "ZIP123"),
                 "+441234567890",
-                "alice@example.com"
-        );
+                "alice@example.com",
+                "secure_password123");
 
         mockMvc.perform(post("/v1/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value("usr-alismi1"))
                 .andExpect(jsonPath("$.name").value("Alice Smith"))
                 .andExpect(jsonPath("$.address.line1").value("Line 1"))
                 .andExpect(jsonPath("$.phoneNumber").value("+441234567890"))
                 .andExpect(jsonPath("$.email").value("alice@example.com"));
+
+        Optional<UserAuth> optionalUserAuth = userAuthRepository.findById("usr-alismi1");
+        assertTrue(optionalUserAuth.isPresent());
+        UserAuth userAuth = optionalUserAuth.get();
+        assertEquals("usr-alismi1", userAuth.getId());
+        assertEquals("secure_password123", userAuth.getPassword());
     }
 
     @Test
@@ -63,7 +79,7 @@ class UserControllerIntegrationTest {
         UserCreateRequest request = new UserCreateRequest(
                 null,
                 AddressResource.builder().line1("L1").town("T1").county("C1").postcode("P1").build(),
-                "0", "jack@example.com");
+                "+1234567890", "jack@example.com", "secure_password123");
 
         mockMvc.perform(post("/v1/users")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -83,7 +99,7 @@ class UserControllerIntegrationTest {
         UserCreateRequest request = new UserCreateRequest(
                 "",
                 AddressResource.builder().line1("L1").town("T1").county("C1").postcode("P1").build(),
-                "0", "jack@example.com");
+                "+1234567890", "jack@example.com", "secure_password123");
 
         mockMvc.perform(post("/v1/users")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -101,7 +117,9 @@ class UserControllerIntegrationTest {
     @Test
     void create_failWitValidationErrorAddressNull() throws Exception {
         UserCreateRequest request = new UserCreateRequest(
-                "Bob Builder", null, "0", "jack@example.com");
+                "Bob Builder",
+                null,
+                "+1234567890", "jack@example.com", "secure_password123");
 
         mockMvc.perform(post("/v1/users")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -121,7 +139,7 @@ class UserControllerIntegrationTest {
         UserCreateRequest request = new UserCreateRequest(
                 "Bob Builder",
                 AddressResource.builder().town("T1").county("C1").postcode("P1").build(),
-                "0", "jack@example.com");
+                "+1234567890", "jack@example.com", "secure_password123");
 
         mockMvc.perform(post("/v1/users")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -141,7 +159,7 @@ class UserControllerIntegrationTest {
         UserCreateRequest request = new UserCreateRequest(
                 "Bob Builder",
                 AddressResource.builder().line1("L1").county("C1").postcode("P1").build(),
-                "0", "jack@example.com");
+                "+1234567890", "jack@example.com", "secure_password123");
 
         mockMvc.perform(post("/v1/users")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -161,7 +179,7 @@ class UserControllerIntegrationTest {
         UserCreateRequest request = new UserCreateRequest(
                 "Bob Builder",
                 AddressResource.builder().line1("L1").town("T1").postcode("P1").build(),
-                "0", "jack@example.com");
+                "+1234567890", "jack@example.com", "secure_password123");
 
         mockMvc.perform(post("/v1/users")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -181,7 +199,7 @@ class UserControllerIntegrationTest {
         UserCreateRequest request = new UserCreateRequest(
                 "Bob Builder",
                 AddressResource.builder().line1("L1").town("T1").county("C1").build(),
-                "0", "jack@example.com");
+                "+1234567890", "jack@example.com", "secure_password123");
 
         mockMvc.perform(post("/v1/users")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -194,6 +212,49 @@ class UserControllerIntegrationTest {
                 .andExpect(jsonPath("$.details[0].field").value("address.postcode"))
                 .andExpect(jsonPath("$.details[0].message").value("must not be blank"))
                 .andExpect(jsonPath("$.details[0].type").value("NotBlank"));
+    }
+
+    @Test
+    void create_failWitValidationErrorPasswordBlank() throws Exception {
+        UserCreateRequest request = new UserCreateRequest(
+                "Bob Builder",
+                AddressResource.builder().line1("L1").postcode("P1").town("T1").county("C1").build(),
+                "+1234567890", "jack@example.com", "");
+
+        mockMvc.perform(post("/v1/users")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Validation failed"))
+                .andExpect(jsonPath("$.details", not(empty())))
+                .andExpect(jsonPath("$.details").isArray())
+                .andExpect(jsonPath("$.details", hasSize(equalTo(2))))
+                .andExpect(jsonPath("$.details[0].field").value("password"))
+                .andExpect(jsonPath("$.details[0].message").value("must not be blank"))
+                .andExpect(jsonPath("$.details[0].type").value("NotBlank"))
+                .andExpect(jsonPath("$.details[1].field").value("password"))
+                .andExpect(jsonPath("$.details[1].message").value("size must be between 8 and 64"))
+                .andExpect(jsonPath("$.details[1].type").value("Size"));
+    }
+
+    @Test
+    void create_failWitValidationErrorPasswordWrongSize() throws Exception {
+        UserCreateRequest request = new UserCreateRequest(
+                "Bob Builder",
+                AddressResource.builder().line1("L1").postcode("P1").town("T1").county("C1").build(),
+                "+1234567890", "jack@example.com", "123456");
+
+        mockMvc.perform(post("/v1/users")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Validation failed"))
+                .andExpect(jsonPath("$.details", not(empty())))
+                .andExpect(jsonPath("$.details").isArray())
+                .andExpect(jsonPath("$.details", hasSize(equalTo(1))))
+                .andExpect(jsonPath("$.details[0].field").value("password"))
+                .andExpect(jsonPath("$.details[0].message").value("size must be between 8 and 64"))
+                .andExpect(jsonPath("$.details[0].type").value("Size"));
     }
 
     @Test
@@ -226,13 +287,13 @@ class UserControllerIntegrationTest {
     }
 
     @Test
-    void updateUserById() {
+    void update() {
         //TODO: update user endpoint tests
         assertTrue(true);
     }
 
     @Test
-    void deleteUser() {
+    void delete() {
         //TODO: delete user endpoint tests
         assertTrue(true);
     }

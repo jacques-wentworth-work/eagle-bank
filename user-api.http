@@ -5,14 +5,15 @@ Content-Type: application/json
 {
   "name": "User One",
   "address": {
-    "line1": "line1",
-    "line2": "line2",
+    "line1": "line11",
+    "line2": "line12",
     "town": "town1",
     "county": "county1",
     "postcode": "postcode1"
   },
-  "phoneNumber": "0111111111",
-  "email": "user.one@example.com"
+  "phoneNumber": "+1234567890",
+  "email": "user.one1@example.com",
+  "password": "qwerty!@£$%"
 }
 
 
@@ -29,16 +30,19 @@ Content-Type: application/json
     "county": "county2",
     "postcode": "postcode2"
   },
-  "phoneNumber": "0222222222",
-  "email": "user.two@example.com"
+  "phoneNumber": "+234567890",
+  "email": "user.two@example.com",
+  "password": "qwerty!@£$%"
 }
 
 
-### Get user
+### Get user 1
 GET http://localhost:8080/eagle-bank/v1/users/usr-useone1
 
+### Get user 2
+GET http://localhost:8080/eagle-bank/v1/users/usr-usetwo1
 
-### Update user
+### Update user 1
 PATCH http://localhost:8080/eagle-bank/v1/users/usr-useone1
 Content-Type: application/json
 
@@ -47,6 +51,14 @@ Content-Type: application/json
     "postcode": "postcode111"
   },
   "phoneNumber": "0123456789"
+}
+
+### Update password user 2
+PATCH http://localhost:8080/eagle-bank/v1/users/usr-usetwo1
+Content-Type: application/json
+
+{
+  "password": "zxcvbnm!@£$%^&*()"
 }
 
 

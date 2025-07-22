@@ -46,7 +46,8 @@ class UserServiceImplTest {
         String name = "Jane Doe";
         String phoneNumber = "+441234567890";
         String email = "jane@example.com";
-        UserCreateRequest request = new UserCreateRequest(name, address, phoneNumber, email);
+        String password = "secure_password123";
+        UserCreateRequest request = new UserCreateRequest(name, address, phoneNumber, email, password);
 
         when(userRepository.findByEmail(request.email()))
                 .thenReturn(Optional.empty());
@@ -139,8 +140,8 @@ class UserServiceImplTest {
                 "Jane Dover",
                 new AddressResource("New Line", "", "", "New Town", "New County", "54321"),
                 "+441112223334",
-                "jane.dover@example.com"
-        );
+                "jane.dover@example.com",
+                "");
 
         when(userRepository.findById(userId)).thenReturn(Optional.of(existing));
         when(userRepository.findByEmail("jane.dover@example.com")).thenReturn(Optional.empty());

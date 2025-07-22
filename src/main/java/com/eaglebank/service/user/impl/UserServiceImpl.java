@@ -46,7 +46,6 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
         setEntity(request, user);
-
         return toResponse(repository.save(user));
     }
 
