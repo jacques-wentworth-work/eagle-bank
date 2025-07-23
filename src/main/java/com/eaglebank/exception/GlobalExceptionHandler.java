@@ -50,7 +50,14 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(UserLoginException.class)
-    public ResponseEntity<GenericError> handleLoginException(UserLoginException ex) {
+    public ResponseEntity<GenericError> handleUserLoginException(UserLoginException ex) {
         return new ResponseEntity<>(new GenericError(ex.getMessage(), null), HttpStatus.UNAUTHORIZED);
     }
+
+    @ExceptionHandler(AccessForbiddenException.class)
+    public ResponseEntity<GenericError> handleAccessForbiddenException(AccessForbiddenException  ex) {
+        return new ResponseEntity<>(new GenericError(ex.getMessage(), null), HttpStatus.FORBIDDEN);
+    }
+
+
 }

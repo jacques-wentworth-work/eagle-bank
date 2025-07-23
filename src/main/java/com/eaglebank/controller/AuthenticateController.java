@@ -1,7 +1,7 @@
 package com.eaglebank.controller;
 
 import com.eaglebank.resource.JwtToken;
-import com.eaglebank.service.auth.AuthService;
+import com.eaglebank.service.authentication.AuthenticationService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -13,16 +13,17 @@ import org.springframework.web.bind.annotation.RestController;
 import static org.springframework.http.ResponseEntity.ok;
 
 @RestController
-@RequestMapping("/v1/auth")
+@RequestMapping("/v1/authenticate")
 @RequiredArgsConstructor
-public class AuthController {
+public class AuthenticateController {
 
-    private final AuthService authService;
+    private final AuthenticationService authenticationService;
 
     @PostMapping
     public ResponseEntity<JwtToken> createToken(HttpServletRequest request) {
-        String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-        JwtToken token = authService.login(authorizationHeader);
+        JwtToken token = authenticationService.login(
+                request.getHeader(HttpHeaders.AUTHORIZATION));
+
         return ok(token);
     }
 }

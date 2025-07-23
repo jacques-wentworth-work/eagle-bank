@@ -1,21 +1,27 @@
 package com.eaglebank.integration;
 
 import com.eaglebank.entity.Address;
+import com.eaglebank.entity.Role;
 import com.eaglebank.entity.User;
-import com.eaglebank.entity.UserAuth;
-import com.eaglebank.repository.UserAuthRepository;
+import com.eaglebank.entity.UserAuthentication;
+import com.eaglebank.repository.UserAuthenticationRepository;
 import com.eaglebank.repository.UserRepository;
 import com.eaglebank.resource.AddressResource;
 import com.eaglebank.resource.UserCreateRequest;
+import com.eaglebank.service.jwt.JwtService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.hamcrest.Matchers.*;
@@ -40,12 +46,18 @@ class UserControllerIntegrationTest {
     private UserRepository userRepository;
 
     @Autowired
-    private UserAuthRepository userAuthRepository;
+    private UserAuthenticationRepository userAuthenticationRepository;
+
+    @Autowired
+    private JwtService jwtService;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @BeforeEach
     void setUp() {
         userRepository.deleteAll();
-        userAuthRepository.deleteAll();
+        userAuthenticationRepository.deleteAll();
     }
 
     @Test
@@ -67,11 +79,12 @@ class UserControllerIntegrationTest {
                 .andExpect(jsonPath("$.phoneNumber").value("+441234567890"))
                 .andExpect(jsonPath("$.email").value("alice@example.com"));
 
-        Optional<UserAuth> optionalUserAuth = userAuthRepository.findById("usr-alismi1");
+        Optional<UserAuthentication> optionalUserAuth = userAuthenticationRepository.findByUsername("usr-alismi1");
         assertTrue(optionalUserAuth.isPresent());
-        UserAuth userAuth = optionalUserAuth.get();
-        assertEquals("usr-alismi1", userAuth.getId());
-        assertEquals("secure_password123", userAuth.getPassword());
+        UserAuthentication userAuthentication = optionalUserAuth.get();
+        assertEquals("usr-alismi1", userAuthentication.getUsername());
+        assertTrue(passwordEncoder.matches("secure_password123", userAuthentication.getPassword()));
+        assertEquals(Role.CUSTOMER, userAuthentication.getRole());
     }
 
     @Test
@@ -229,12 +242,9 @@ class UserControllerIntegrationTest {
                 .andExpect(jsonPath("$.details", not(empty())))
                 .andExpect(jsonPath("$.details").isArray())
                 .andExpect(jsonPath("$.details", hasSize(equalTo(2))))
-                .andExpect(jsonPath("$.details[0].field").value("password"))
-                .andExpect(jsonPath("$.details[0].message").value("must not be blank"))
-                .andExpect(jsonPath("$.details[0].type").value("NotBlank"))
-                .andExpect(jsonPath("$.details[1].field").value("password"))
-                .andExpect(jsonPath("$.details[1].message").value("size must be between 8 and 64"))
-                .andExpect(jsonPath("$.details[1].type").value("Size"));
+                .andExpect(jsonPath("$.details[*].field", everyItem(is("password"))))
+                .andExpect(jsonPath("$.details[*].message", containsInAnyOrder("size must be between 8 and 64", "must not be blank")))
+                .andExpect(jsonPath("$.details[*].type", containsInAnyOrder("Size", "NotBlank")));
     }
 
     @Test
@@ -259,17 +269,13 @@ class UserControllerIntegrationTest {
 
     @Test
     void get_success() throws Exception {
-        User saved = userRepository.save(User.builder()
-                .id("usr-samsmi1")
-                .name("Samuel Smith")
-                .email("sam.smith@example.com")
-                .phoneNumber("1234567890")
-                .address(Address.builder()
-                        .line1("L1").postcode("P1").town("T1").county("C1")
-                        .build())
-                .build());
+        String userId = "usr-samsmi1";
 
-        mockMvc.perform(get("/v1/users/{id}", saved.getId()))
+        User saved = aUserAndAuth(userId);
+        String token = createSampleJwtToken(userId, generateExtraClaims(userId, "CUSTOMER"));
+
+        mockMvc.perform(get("/v1/users/{id}", saved.getId())
+                        .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("Samuel Smith"))
                 .andExpect(jsonPath("$.email").value("sam.smith@example.com"))
@@ -282,8 +288,27 @@ class UserControllerIntegrationTest {
 
     @Test
     void get_notFound() throws Exception {
-        mockMvc.perform(get("/v1/users/{id}", "usr-johway1"))
+        String userId = "usr-samsmi1";
+
+        anAuthUser(userId);
+        String token = createSampleJwtToken(userId, generateExtraClaims(userId, "CUSTOMER"));
+
+        mockMvc.perform(get("/v1/users/{id}", "usr-samsmi1")
+                        .header("Authorization", "Bearer " + token))
                 .andExpect(status().isNotFound());
+    }
+
+
+    @Test
+    void get_forbidden() throws Exception {
+        String userId = "usr-samsmi1";
+
+        aUserAndAuth(userId);
+        String token = createSampleJwtToken(userId, generateExtraClaims(userId, "CUSTOMER"));
+
+        mockMvc.perform(get("/v1/users/usr-not-found")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isForbidden());
     }
 
     @Test
@@ -296,5 +321,43 @@ class UserControllerIntegrationTest {
     void delete() {
         //TODO: delete user endpoint tests
         assertTrue(true);
+    }
+
+    private User aUserAndAuth(String userId) {
+        User saved = aUser(userId);
+        anAuthUser(userId);
+
+        return saved;
+    }
+
+    private User aUser(String userId) {
+        return userRepository.save(User.builder()
+                .id(userId)
+                .name("Samuel Smith")
+                .email("sam.smith@example.com")
+                .phoneNumber("1234567890")
+                .address(Address.builder()
+                        .line1("L1").postcode("P1").town("T1").county("C1")
+                        .build())
+                .build());
+    }
+
+    private void anAuthUser(String userId) {
+        userAuthenticationRepository.save(UserAuthentication.builder()
+                .username(userId)
+                .password(passwordEncoder.encode("password123"))
+                .role(Role.CUSTOMER)
+                .build());
+    }
+
+    private String createSampleJwtToken(String userId, Map<String, Object> claims) {
+        return jwtService.generateToken(userId, claims);
+    }
+
+    private Map<String, Object> generateExtraClaims(String userId, String role) {
+        Map<String, Object> extraClaims = new HashMap<>();
+        extraClaims.put("name", userId);
+        extraClaims.put("role", role);
+        return extraClaims;
     }
 }

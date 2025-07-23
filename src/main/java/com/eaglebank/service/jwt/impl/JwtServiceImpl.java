@@ -1,7 +1,8 @@
-package com.eaglebank.service.auth.component;
+package com.eaglebank.service.jwt.impl;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
+import com.eaglebank.exception.UserLoginException;
+import com.eaglebank.service.jwt.JwtService;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -9,29 +10,27 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
+import java.util.Map;
 
 @Component
-public class JwtUtil {
-    public static final int JWT_TTL = 60 * 60 * 1000; // Token valid for 1 hours
-
+public class JwtServiceImpl implements JwtService {
     private final SecretKey secretKey;
+    private final int jwtTTL;
 
-    public JwtUtil(@Value("${secrets.jwt}") String jwtSecret) {
+    public JwtServiceImpl(@Value("${jwt.secrets}") String jwtSecret,
+                          @Value("${jwt.ttl-minutes}") int jwtTtlMinutes) {
         this.secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
+        this.jwtTTL = jwtTtlMinutes * 60 * 1000;
     }
 
-    public String generateToken(String username) {
+    public String generateToken(String username, Map<String, Object> claims) {
         return Jwts.builder()
                 .subject(username)
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + JWT_TTL))
+                .expiration(new Date(System.currentTimeMillis() + jwtTTL))
+                .claims(claims)
                 .signWith(secretKey)
                 .compact();
-    }
-
-    public boolean validateToken(String token, String username) {
-        String extractedUsername = extractUsername(token);
-        return (extractedUsername.equals(username) && !isTokenExpired(token));
     }
 
     public String extractUsername(String token) {
@@ -44,9 +43,5 @@ public class JwtUtil {
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
-    }
-
-    private boolean isTokenExpired(String token) {
-        return extractAllClaims(token).getExpiration().before(new Date());
     }
 }
