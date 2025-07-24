@@ -1,0 +1,29 @@
+
+### Create Account
+POST http://localhost:8080/eagle-bank/v1/accounts
+authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJ1c3ItdXNlb25lMSIsImlhdCI6MTc1MzM0NjIwOCwiZXhwIjoxNzUzMzQ5ODA4LCJyb2xlIjoiQ1VTVE9NRVIiLCJuYW1lIjoidXNyLXVzZW9uZTEifQ.5P0md7z5RWBSda_e9_xcG6RiiZkXyXEKGjq9c2IfUju-9uGSM38Qay993_8U7Tu5
+Content-Type: application/json
+
+{
+  "name": "Personal Bank Account 2",
+  "accountType": "personal"
+}
+
+### Get all Accounts
+GET http://localhost:8080/eagle-bank/v1/accounts
+authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJ1c3ItdXNlb25lMSIsImlhdCI6MTc1MzM0NjIwOCwiZXhwIjoxNzUzMzQ5ODA4LCJyb2xlIjoiQ1VTVE9NRVIiLCJuYW1lIjoidXNyLXVzZW9uZTEifQ.5P0md7z5RWBSda_e9_xcG6RiiZkXyXEKGjq9c2IfUju-9uGSM38Qay993_8U7Tu5
+
+
+### Get 1 Accounts
+GET http://localhost:8080/eagle-bank/v1/accounts/01390411
+authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJ1c3ItdXNlb25lMSIsImlhdCI6MTc1MzM0NTE3MCwiZXhwIjoxNzUzMzQ4NzcwLCJyb2xlIjoiQ1VTVE9NRVIiLCJuYW1lIjoidXNyLXVzZW9uZTEifQ.tuJb51nM9CziFwwGgPOwbMxLyCCmO6mFWlM39yrxE-cPray7_qAfmaTuk2Dxu9jK
+
+
+### Update Accounts
+PATCH http://localhost:8080/eagle-bank/v1/accounts/01338074
+authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJ1c3ItdXNlb25lMSIsImlhdCI6MTc1MzMzOTgyMCwiZXhwIjoxNzUzMzQzNDIwLCJyb2xlIjoiQ1VTVE9NRVIiLCJuYW1lIjoidXNyLXVzZW9uZTEifQ.XrexUl1MRxofUfbI80onFmGxlXoKRDHb6MrBuGE6JJHgCM73E8DS9iuRBWq7sVoJ
+Content-Type: application/json
+
+{
+  "name": "Personal Bank Account 1.1"
+}

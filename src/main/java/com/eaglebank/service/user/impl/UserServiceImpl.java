@@ -14,9 +14,6 @@ import com.eaglebank.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import static com.eaglebank.mapper.UserMapper.toEntity;
-import static com.eaglebank.mapper.UserMapper.toResponse;
-
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -30,7 +27,7 @@ public class UserServiceImpl implements UserService {
         duplicateEmailValidation(request.email());
 
         String id = generateUserId(request.name());
-        return toResponse(repository.save(toEntity(id, request)));
+        return UserMapper.toResponse(repository.save(UserMapper.toEntity(id, request)));
     }
 
     @Override
@@ -46,7 +43,7 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
         setEntity(request, user);
-        return toResponse(repository.save(user));
+        return UserMapper.toResponse(repository.save(user));
     }
 
     private void setEntity(UserUpdateRequest request, User user) {

@@ -45,7 +45,17 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<GenericError> handleUserNotFound(UserNotFoundException ex) {
+    public ResponseEntity<GenericError> handleUserNotFoundException(UserNotFoundException ex) {
+        return new ResponseEntity<>(new GenericError(ex.getMessage(), null), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(AccountNotFoundException.class)
+    public ResponseEntity<GenericError> handleAccountNotFoundException(AccountNotFoundException ex) {
+        return new ResponseEntity<>(new GenericError(ex.getMessage(), null), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(TransactionNotFoundException.class)
+    public ResponseEntity<GenericError> handleTransactionNotFoundException(TransactionNotFoundException ex) {
         return new ResponseEntity<>(new GenericError(ex.getMessage(), null), HttpStatus.NOT_FOUND);
     }
 
@@ -59,5 +69,9 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(new GenericError(ex.getMessage(), null), HttpStatus.FORBIDDEN);
     }
 
+    @ExceptionHandler(UnprocessedTransactionException.class)
+    public ResponseEntity<GenericError> handleUnprocessedTransactionException(UnprocessedTransactionException  ex) {
+        return new ResponseEntity<>(new GenericError(ex.getMessage(), null), HttpStatus.UNPROCESSABLE_ENTITY);
+    }
 
 }

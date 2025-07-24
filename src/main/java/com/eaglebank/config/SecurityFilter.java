@@ -12,7 +12,6 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
 @Configuration
 @EnableWebSecurity
@@ -21,17 +20,15 @@ public class SecurityFilter {
 
     public static final String PATH_V1_USERS = "/v1/users";
     public static final String PATH_V1_USERS_ID = "/v1/users/**";
+    public static final String PATH_V1_ACCOUNTS_ID = "/v1/accounts/**";
     public static final String PATH_V1_AUTHENTICATE = "/v1/authenticate";
 
     private final AuthenticationProvider authenticationProvider;
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-
     @Bean
-    public SecurityFilterChain securityFilterChain(
-            HttpSecurity http,
-            HandlerMappingIntrospector introspector) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
                 .csrf(AbstractHttpConfigurer::disable)
@@ -45,16 +42,17 @@ public class SecurityFilter {
 
                     auth.requestMatchers(HttpMethod.POST, PATH_V1_AUTHENTICATE).permitAll();
 
+                    //User
                     auth.requestMatchers(HttpMethod.POST, PATH_V1_USERS).permitAll();
                     auth.requestMatchers(HttpMethod.GET, PATH_V1_USERS_ID).hasAuthority(Permission.USER.name());
                     auth.requestMatchers(HttpMethod.PATCH, PATH_V1_USERS_ID).hasAuthority(Permission.USER.name());
                     auth.requestMatchers(HttpMethod.DELETE, PATH_V1_USERS_ID).hasAuthority(Permission.USER.name());
 
+                    //Accounts & transactions
+                    auth.requestMatchers(PATH_V1_ACCOUNTS_ID).hasAuthority(Permission.USER.name());
+
                     auth.anyRequest().denyAll();
                 })
-//                .headers(headers -> headers
-//                        .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin) // Allow iframe access
-//                )
         ;
 
         return http.build();

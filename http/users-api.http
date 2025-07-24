@@ -38,19 +38,22 @@ Content-Type: application/json
 
 ### Get user 1
 GET http://localhost:8080/eagle-bank/v1/users/usr-useone1
+authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJ1c3ItdXNlb25lMSIsImlhdCI6MTc1MzM0MjgxOSwiZXhwIjoxNzUzMzQ2NDE5LCJyb2xlIjoiQ1VTVE9NRVIiLCJuYW1lIjoidXNyLXVzZW9uZTEifQ.XucD18A21qh-Od3ctZ0yHQ3LD0q6FTO_thHpG4gpDNHLp3J_q-JNeHN7QZE5j7Ri
 
 ### Get user 2
 GET http://localhost:8080/eagle-bank/v1/users/usr-usetwo1
+authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJ1c3ItdXNldHdvMSIsImlhdCI6MTc1MzM0MjgzMCwiZXhwIjoxNzUzMzQ2NDMwLCJyb2xlIjoiQ1VTVE9NRVIiLCJuYW1lIjoidXNyLXVzZXR3bzEifQ.9CPud9QX7XZxdV6tBu2I6CBj8dFyT8b5j3OJmTL2K7fLsC59af55fESNZf7jo-wB
 
 ### Update user 1
 PATCH http://localhost:8080/eagle-bank/v1/users/usr-useone1
+authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJ1c3ItdXNlb25lMSIsImlhdCI6MTc1MzMzOTI0NiwiZXhwIjoxNzUzMzQyODQ2LCJyb2xlIjoiQ1VTVE9NRVIiLCJuYW1lIjoidXNyLXVzZW9uZTEifQ.GUWdrd59OSsOxH0VHDtUfPf5ZP-x73fYxSBaTCgzemZVw9B2YTLtw98KFcylWBDA
 Content-Type: application/json
 
 {
   "address": {
     "postcode": "postcode111"
   },
-  "phoneNumber": "0123456789"
+  "phoneNumber": "+12345678901"
 }
 
 ### Update password user 2
@@ -64,3 +67,4 @@ Content-Type: application/json
 
 ### Delete user
 DELETE http://localhost:8080/eagle-bank/v1/users/usr-useone1
+authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJ1c3ItdXNlb25lMSIsImlhdCI6MTc1MzMzOTI0NiwiZXhwIjoxNzUzMzQyODQ2LCJyb2xlIjoiQ1VTVE9NRVIiLCJuYW1lIjoidXNyLXVzZW9uZTEifQ.GUWdrd59OSsOxH0VHDtUfPf5ZP-x73fYxSBaTCgzemZVw9B2YTLtw98KFcylWBDA

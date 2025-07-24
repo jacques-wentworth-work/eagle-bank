@@ -6,13 +6,13 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "USER_DETAIL",
+        uniqueConstraints = @UniqueConstraint(columnNames = "email"))
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Getter
 @Setter
-@Table(name = "USER_DETAIL",
-        uniqueConstraints = @UniqueConstraint(columnNames = "email"))
 public class User {
     @Id
     private String id;

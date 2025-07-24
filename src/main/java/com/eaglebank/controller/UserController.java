@@ -21,9 +21,10 @@ import static org.springframework.http.ResponseEntity.ok;
 @RequestMapping("/v1/users")
 @RequiredArgsConstructor
 public class UserController {
+
+    private final JwtService jwtService;
     private final UserService userService;
     private final AuthenticationService authenticationService;
-    private final JwtService jwtService;
 
     @PostMapping
     public ResponseEntity<UserResponse> createUser(

@@ -1,0 +1,12 @@
+### Get Token with valid creds usr-useone1
+POST http://localhost:8080/eagle-bank/v1/authenticate
+authorization: Basic dXNyLXVzZW9uZTE6cXdlcnR5IUDCoyQl
+
+### Get Token with valid creds usr-usetwo1
+POST http://localhost:8080/eagle-bank/v1/authenticate
+authorization: Basic dXNyLXVzZXR3bzE6cXdlcnR5IUDCoyQl
+
+### Get Token with invalid creds
+POST http://localhost:8080/eagle-bank/v1/auth
+Content-Type: application/json
+Authorization: Basic qwertyuiopoiuytre
