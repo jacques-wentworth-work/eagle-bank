@@ -1,27 +1,54 @@
-    # Getting Started
+# Eagle Bank
 
-### Reference Documentation
+Eagle Bank is a modern web API designed for personal banking management.
 
-For further reference, please consider the following sections:
+## Table of Contents
 
-* [Official Apache Maven documentation](https://maven.apache.org/guides/index.html)
-* [Spring Boot Maven Plugin Reference Guide](https://docs.spring.io/spring-boot/3.5.3/maven-plugin)
-* [Create an OCI image](https://docs.spring.io/spring-boot/3.5.3/maven-plugin/build-image.html)
-* [Spring Web](https://docs.spring.io/spring-boot/3.5.3/reference/web/servlet.html)
+- [Features](#features)
+- [Technologies Used](#technologies-used)
+- [Getting Started](#getting-started)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Contributing](#contributing)
+- [License](#license)
+- [Contact](#contact)
 
-### Guides
+## Features
 
-The following guides illustrate how to use some features concretely:
+- **User Authentication**: Secure login and registration for users.
+- **Account Management**: Users can create, view and update their account details.
+- **Transaction Management**: Ability to add transactions.
+- **Transaction History**: View a history of all transactions.
 
-* [Building a RESTful Web Service](https://spring.io/guides/gs/rest-service/)
-* [Serving Web Content with Spring MVC](https://spring.io/guides/gs/serving-web-content/)
-* [Building REST services with Spring](https://spring.io/guides/tutorials/rest/)
+## Getting Started
 
-### Maven Parent overrides
+To get a local copy of Eagle Bank up and running, follow these simple steps.
 
-Due to Maven's design, elements are inherited from the parent POM to the project POM.
-While most of the inheritance is fine, it also inherits unwanted elements like `<license>` and `<developers>` from the
-parent.
-To prevent this, the project POM contains empty overrides for these elements.
-If you manually switch to a different parent and actually want the inheritance, you need to remove those overrides.
+### Prerequisites
 
+- Java 21 or later
+- Latest Maven
+
+### Installation
+
+1. Clone the repository:
+    ```bash
+    git clone https://github.com/jacques-wentworth-work/eagle-bank.git
+    ```
+2. Navigate to the project directory:
+    ```bash
+    cd eagle-bank
+    ```
+
+### Usage
+
+To run the application, you need to start both the backend servers.
+
+1. Start the backend:
+    ```bash
+    mvn spring-boot:run
+    ```
+
+All endpoints can be accessed on [http://localhost:8080/eagle-bank]
+
+Project Link: [https://github.com/jacques-wentworth-work/eagle-bank](https://github.com/jacques-wentworth-work/eagle-bank)
