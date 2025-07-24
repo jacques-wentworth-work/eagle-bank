@@ -30,8 +30,7 @@ public class SecurityFilter {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-        http
-                .csrf(AbstractHttpConfigurer::disable)
+        http.csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(sessionManagementConfigurer ->
                         sessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
@@ -42,18 +41,14 @@ public class SecurityFilter {
 
                     auth.requestMatchers(HttpMethod.POST, PATH_V1_AUTHENTICATE).permitAll();
 
-                    //User
                     auth.requestMatchers(HttpMethod.POST, PATH_V1_USERS).permitAll();
                     auth.requestMatchers(HttpMethod.GET, PATH_V1_USERS_ID).hasAuthority(Permission.USER.name());
                     auth.requestMatchers(HttpMethod.PATCH, PATH_V1_USERS_ID).hasAuthority(Permission.USER.name());
                     auth.requestMatchers(HttpMethod.DELETE, PATH_V1_USERS_ID).hasAuthority(Permission.USER.name());
-
-                    //Accounts & transactions
                     auth.requestMatchers(PATH_V1_ACCOUNTS_ID).hasAuthority(Permission.USER.name());
 
                     auth.anyRequest().denyAll();
-                })
-        ;
+                });
 
         return http.build();
     }

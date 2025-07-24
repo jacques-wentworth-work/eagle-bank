@@ -27,7 +27,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public Transaction createTransaction(String accountNumber, Transaction txn, String userId) {
+    public Transaction create(String accountNumber, Transaction txn, String userId) {
         Account acc = accountRepo.findByAccountNumberAndUserId(accountNumber, userId)
                 .orElseThrow(() ->
                         new AccountNotFoundException(String.format(AccountNotFoundException.STANDARD_EXCEPTION_MESSAGE, accountNumber)));
@@ -52,7 +52,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public List<Transaction> listTransactions(String accountNumber, String userId) {
+    public List<Transaction> list(String accountNumber, String userId) {
         accountRepo.findByAccountNumberAndUserId(accountNumber, userId)
                 .orElseThrow(() ->
                         new AccountNotFoundException(String.format(AccountNotFoundException.STANDARD_EXCEPTION_MESSAGE, userId)));
@@ -60,7 +60,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public Transaction getTransaction(String accountNumber, String txnId, String userId) {
+    public Transaction get(String accountNumber, String txnId, String userId) {
         accountRepo.findByAccountNumberAndUserId(accountNumber, userId)
                 .orElseThrow(() -> new AccountNotFoundException(String.format(AccountNotFoundException.STANDARD_EXCEPTION_MESSAGE, accountNumber)));
 

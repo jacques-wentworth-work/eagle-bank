@@ -1,5 +1,6 @@
 package com.eaglebank.config;
 
+import com.eaglebank.exception.UserNotFoundException;
 import com.eaglebank.repository.UserAuthenticationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -37,10 +38,8 @@ public class SecurityBeansInjector {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return username -> {
-            return userAuthenticationRepository.findByUsername(username)
-                    .orElseThrow(() -> new RuntimeException("User not found"));
-        };
+        return username -> userAuthenticationRepository.findByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
     }
 
     @Bean

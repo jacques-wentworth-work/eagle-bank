@@ -7,23 +7,23 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
 @Component
+@RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    @Autowired
-    private JwtService jwtService;
+    private final JwtService jwtService;
 
-    @Autowired
-    private UserAuthenticationRepository userAuthenticationRepository;
+    private final UserAuthenticationRepository userAuthenticationRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -38,7 +38,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String jwt = authHeader.split(" ")[1];
         String username = jwtService.extractUsername(jwt);
 
-        UserAuthentication user = userAuthenticationRepository.findByUsername(username).get();
+        UserAuthentication user = userAuthenticationRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Invalid username"));
 
         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                 username, null, user.getAuthorities());

@@ -32,7 +32,7 @@ public class TransactionController {
         validateUser(userId, jwt);
 
         Transaction txn = TransactionMapper.toEntity(request);
-        Transaction saved = transactionService.createTransaction(accountNumber, txn, userId);
+        Transaction saved = transactionService.create(accountNumber, txn, userId);
         return new ResponseEntity<>(TransactionMapper.toResponse(saved), HttpStatus.CREATED);
     }
 
@@ -43,7 +43,7 @@ public class TransactionController {
         String userId = getUserId(jwt);
         validateUser(userId, jwt);
 
-        List<Transaction> txns = transactionService.listTransactions(accountNumber, userId);
+        List<Transaction> txns = transactionService.list(accountNumber, userId);
         return ResponseEntity.ok(txns.stream().map(TransactionMapper::toResponse).toList());
     }
 
@@ -55,7 +55,7 @@ public class TransactionController {
         String userId = getUserId(jwt);
         validateUser(userId, jwt);
 
-        Transaction txn = transactionService.getTransaction(accountNumber, transactionId, userId);
+        Transaction txn = transactionService.get(accountNumber, transactionId, userId);
         return ResponseEntity.ok(TransactionMapper.toResponse(txn));
     }
 
