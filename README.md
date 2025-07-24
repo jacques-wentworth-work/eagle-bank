@@ -9,9 +9,6 @@ Eagle Bank is a modern web API designed for personal banking management.
 - [Getting Started](#getting-started)
 - [Installation](#installation)
 - [Usage](#usage)
-- [Contributing](#contributing)
-- [License](#license)
-- [Contact](#contact)
 
 ## Features
 
@@ -49,6 +46,10 @@ To run the application, you need to start both the backend servers.
     mvn spring-boot:run
     ```
 
-All endpoints can be accessed on [http://localhost:8080/eagle-bank]
+2. These files contain examples of REST API calls:
+- [users-api.http](http/users-api.http)
+- [auth-api.http](http/auth-api.http)
+- [accounts-api.http](http/accounts-api.http)
+- [transactions-api.http](http/transactions-api.http)
 
 Project Link: [https://github.com/jacques-wentworth-work/eagle-bank](https://github.com/jacques-wentworth-work/eagle-bank)
